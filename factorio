@@ -1,0 +1,65 @@
+#!/usr/bin/env python3
+
+#==================
+# imports
+#==================
+import tkinter as tk
+from tkinter import ttk
+from tkinter import messagebox as msg
+
+import sys
+import subprocess
+
+# Create Instance
+win = tk.Tk()
+
+# Add Title
+win.title("Factorio Games")
+
+# Disable Resizing
+win.resizable(False, False)
+
+# Helper Functions
+def mbox(mod):
+    text = "Launching "+mod
+    msg.showinfo("Launching", text)
+
+# Factorio Starting Options
+def cancel():
+    win.quit()
+    win.destroy()
+    #exit()
+
+def factorio():
+    mbox("Unmodded Factorio")
+    subprocess.Popen("factorio-vanilla")
+    cancel()
+
+def factorio_plus():
+    mbox("Factorio Plus")
+    subprocess.Popen("factorio-vanillaplus")
+    cancel()
+
+def factorio_angelsbobs():
+    mbox("AngelsBobs Factorio")
+    subprocess.Popen("factorio-angelsbobs")
+    cancel()
+
+# Add Buttons
+fac = ttk.Button(win, text="Vanilla Factorio", command=factorio)
+fac.grid(column=0, row=0, padx=2, pady=2)
+
+fac_plus = ttk.Button(win, text="Factorio Plus", command=factorio_plus)
+fac_plus.grid(column=0, row=1, padx=2, pady=2)
+
+fac_ab = ttk.Button(win, text="Factorio AngelsBobs", command=factorio_angelsbobs)
+fac_ab.grid(column=0, row=2, padx=2, pady=2)
+
+can = ttk.Button(win, text="Cancel", command=cancel)
+can.grid(column=0, row=3, padx=2, pady=2)
+
+
+#==================
+# Starting GUI
+#==================
+win.mainloop()

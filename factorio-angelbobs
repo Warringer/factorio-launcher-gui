@@ -1,0 +1,2 @@
+#!/bin/bash
+steam -applaunch 427520 --mod-directory /home/warringer/.factorio/angelbobs/
