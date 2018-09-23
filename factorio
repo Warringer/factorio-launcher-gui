@@ -78,7 +78,7 @@ class Launcher:
 				launcher = "steam -applaunch 427520"
 		if mod:
 			if self.moddir:
-				launcher = launcher + " --mod-directory " + self.moddir + mod
+				launcher = launcher + " --mod-directory " + self.moddir + "/" + mod
 			else:
 				launcher = launcher + " --mod-directory " + HOME + "/.factorio/" + mod
 		print(launcher)
