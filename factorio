@@ -19,24 +19,6 @@ SETTINGS_FILE = "factorio-mods.json"
 
 HOME = expanduser("~")
 
-# Loading Factorio mods externally
-with open(SETTINGS_FILE, "r") as json_file:
-    json_data = json.load(json_file)
-
-mods = json_data["Mods"]
-directories = json_data["Directories"]
-#print(mods)
-#print(mod_dir)
-
-# Create Instance
-main = tk.Tk()
-
-# Add Title
-main.title("Factorio Games")
-
-# Disable Resizing
-main.resizable(False, False)
-
 # Launcher Class
 class Launcher:
 	def __init__(self, rootTab, mods, directories):
@@ -51,7 +33,7 @@ class Launcher:
 		# Add Buttons
 		# Add Launcher Button
 		self.labelFrame = ttk.LabelFrame(self.frame, text="Launcher")
-		self.labelFrame.grid(column=0, row=0, sticky=N+S+E+W, padx=5, pady=5)
+		self.labelFrame.place(relx=0.5, rely=0.5, anchor=CENTER)
 		buttons = []
 		x = 0
 		for mod in self.mods:
@@ -78,7 +60,7 @@ class Launcher:
 				launcher = "steam -applaunch 427520"
 		if mod:
 			if self.moddir:
-				launcher = launcher + " --mod-directory " + self.moddir + mod
+				launcher = launcher + " --mod-directory " + self.moddir + "/" + mod
 			else:
 				launcher = launcher + " --mod-directory " + HOME + "/.factorio/" + mod
 		print(launcher)
@@ -102,7 +84,7 @@ class Directories:
 	def __init__(self, rootTab, directories):
 		self.frame = ttk.Frame(rootTab)
 		self.directories = directories
-		self.entrylen = 20
+		self.entrylen = 40
 		self.game = tk.StringVar()
 		self.game.set(self.directories["Game"])
 		self.mods = tk.StringVar()
@@ -111,10 +93,7 @@ class Directories:
 		
 	def _fileDiag(self, dirName):
 		if dirName == "":
-			if os.name == "nt":
-				dirName = "C:\\"
-			else:
-				dirName = "~/"
+			dirName = HOME
 		options = {}
 		options['initialdir'] = dirName
 		options['mustexist'] = False
@@ -142,7 +121,7 @@ class Directories:
 		
 	def _addFileControls(self):
 		self.labelFrame = ttk.LabelFrame(self.frame, text="Directories")
-		self.labelFrame.grid(column=0, row=0, sticky=N+S+E+W, padx=5, pady=5)
+		self.labelFrame.place(relx=0.5, rely=0.5, anchor=CENTER)
 		self.gameButton = ttk.Button(self.labelFrame, text="Game Directory", command=self._gameDiag)
 		self.gameButton.grid(column=0, row=0, sticky=N+S+E+W, padx=5, pady=5)
 		self.gameTextField = ttk.Entry(self.labelFrame, width=self.entrylen, textvariable=self.game)
@@ -155,7 +134,23 @@ class Directories:
 		self.saveButton = ttk.Button(self.labelFrame, text="Save Changes", command=self._save)
 		self.saveButton.grid(column=0, row=2, columnspan=2, padx=5, pady=5)
 		
+# Loading Factorio mods externally
+with open(SETTINGS_FILE, "r") as json_file:
+    json_data = json.load(json_file)
 
+mods = json_data["Mods"]
+directories = json_data["Directories"]
+
+# Create Instance
+main = tk.Tk()
+
+# Add Title
+main.title("Factorio Games")
+
+# Disable Resizing
+main.resizable(False, False)
+print(mods.size())
+main.geometry("500x200")
 
 # Tabs for ease of use
 
