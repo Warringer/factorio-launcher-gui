@@ -32,10 +32,11 @@ main.resizable(False, False)
 
 # Launcher Class
 class Launcher:
-	def __init__(self, rootTab, mods):
+	def __init__(self, rootTab, mods, directories):
 		self.frame = ttk.Frame(rootTab)
 		self.mods = mods
 		self.root = rootTab
+		self.gamedir = directories["Game"]
 		self._addButtons()
 	
 	def _addButtons(self):
@@ -59,9 +60,12 @@ class Launcher:
 		
 	def _launch(self, mod=""):
 		if game_dir:
-			launcher = game_dir
+			launcher = self.gamedir
 		else:
-			launcher = "steam -applaunch 427520"
+			if os.name == "nt":
+				launcher = '""%s" %s"' % ("%ProgramFiles(x86)%\\Steam\\steam", "-applaunch 427520")
+			else:
+				launcher = "steam -applaunch 427520"
 		if mod:
 			launcher = launcher + " --mod-directory ~/.factorio/" + mod
 		print(launcher)
