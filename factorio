@@ -28,7 +28,7 @@ class Launcher:
 		self.gamedir = directories["Game"]
 		self.moddir = directories["Mods"]
 		self._addButtons()
-	
+
 	def _addButtons(self):
 		# Add Buttons
 		# Add Launcher Button
@@ -41,15 +41,15 @@ class Launcher:
 			button = ttk.Button(self.labelFrame , text=mod+" Factorio", command=self._make_callback(mod))
 			button.grid(column=0, row=x, padx=10, pady=2, sticky=N+S+E+W)
 			x = x + 1
-		
+
 		# Cancel Button
 		self.can = ttk.Button(self.labelFrame , text="Cancel", command=self._cancel)
 		self.can.grid(column=0, row=x, padx=10, pady=2, sticky=N+S+E+W)
-		
+
 	def _mbox(self, mod):
 		text = "Launching "+mod
 		msg.showinfo("Launching", text)
-		
+
 	def _launch(self, mod=""):
 		if self.gamedir:
 			launcher = self.gamedir
@@ -65,7 +65,7 @@ class Launcher:
 				launcher = launcher + " --mod-directory " + HOME + "/.factorio/" + mod
 		print(launcher)
 		os.system(launcher)
-	
+
 	def _callback(self, mod):
 		self._mbox(mod + " Factorio")
 		self._launch(mods[mod])
@@ -79,7 +79,7 @@ class Launcher:
 		main.quit()
 		main.destroy()
 		#exit()
-		
+
 class Directories:
 	def __init__(self, rootTab, directories):
 		self.frame = ttk.Frame(rootTab)
@@ -90,7 +90,7 @@ class Directories:
 		self.mods = tk.StringVar()
 		self.mods.set(self.directories["Mods"])
 		self._addFileControls()
-		
+
 	def _fileDiag(self, dirName):
 		if dirName == "":
 			dirName = HOME
@@ -99,17 +99,19 @@ class Directories:
 		options['mustexist'] = False
 		options['parent'] = main
 		return fDiag.askdirectory(**options)
-		
+
 	def _gameDiag(self):
 		name = self._fileDiag(self.game.get())
 		self.game.set(name)
-		
+
 	def _modDiag(self):
 		name = self._fileDiag(self.mods.get())
 		self.mods.set(name)
-		
+
 	def _save(self):
 		self.directories["Game"] = self.game.get()
+        self.gamedir = self.game.get()
+        self.moddir = self.mods.get()
 		self.directories["Mods"] = self.mods.get()
 		with open(SETTINGS_FILE, "r") as json_file:
 			json_data = json.load(json_file)
@@ -117,8 +119,8 @@ class Directories:
 		print(json_data)
 		with open(SETTINGS_FILE, "w") as write_file:
 			json.dump(json_data, write_file, indent=4)
-		tab1.directories = self.directories		
-		
+		tab1.directories = self.directories
+
 	def _addFileControls(self):
 		self.labelFrame = ttk.LabelFrame(self.frame, text="Directories")
 		self.labelFrame.place(relx=0.5, rely=0.5, anchor=CENTER)
@@ -130,7 +132,7 @@ class Directories:
 		self.modButton.grid(column=0, row=1, sticky=N+S+E+W, padx=5, pady=5)
 		self.modTextField = ttk.Entry(self.labelFrame, width=self.entrylen, textvariable=self.mods)
 		self.modTextField.grid(column=1, row=1, padx=5, pady=5)
-		
+
 		self.saveButton = ttk.Button(self.labelFrame, text="Save Changes", command=self._save)
 		self.saveButton.grid(column=0, row=2, columnspan=2, padx=5, pady=5)
 		
