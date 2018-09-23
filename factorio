@@ -7,6 +7,7 @@ import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox as msg
+from tkinter import filedialog as fDiag
 
 import sys
 import os
@@ -42,17 +43,19 @@ class Launcher:
 	def _addButtons(self):
 		# Add Buttons
 		# Add Launcher Button
+		self.labelFrame = ttk.LabelFrame(self.frame, text="Launcher")
+		self.labelFrame.grid(column=0, row=0, sticky=N+S+E+W, padx=5, pady=5)
 		buttons = []
 		x = 0
 		for mod in self.mods:
 			print(mod + " " + self.mods[mod])
-			button = ttk.Button(self.root, text=mod+" Factorio", command=self._make_callback(mod))
+			button = ttk.Button(self.labelFrame , text=mod+" Factorio", command=self._make_callback(mod))
 			button.grid(column=0, row=x, padx=10, pady=2, sticky=N+S+E+W)
 			x = x + 1
 		
 		# Cancel Button
-		can = ttk.Button(self.root, text="Cancel", command=self._cancel)
-		can.grid(column=0, row=x, padx=10, pady=2, sticky=N+S+E+W)
+		self.can = ttk.Button(self.labelFrame , text="Cancel", command=self._cancel)
+		self.can.grid(column=0, row=x, padx=10, pady=2, sticky=N+S+E+W)
 		
 	def _mbox(self, mod):
 		text = "Launching "+mod
@@ -89,6 +92,30 @@ class Files:
 	def __init__(self, rootTab, directories):
 		self.frame = ttk.Frame(rootTab)
 		self.directories = directories
+		self.entrylen = 20
+		self._addFileControls()
+		
+	def _gameDiag(self):
+		name = fDiag.askopenfilename(parent=main)
+		
+	def _modDiag(self):
+		name = fDiag.askopenfilename(parent=main)
+		
+	def _addFileControls(self):
+		self.labelFrame = ttk.LabelFrame(self.frame, text="Directories")
+		self.labelFrame.grid(column=0, row=0, sticky=N+S+E+W, padx=5, pady=5)
+		self.gameButton = ttk.Button(self.labelFrame, text="Game Directory", command=self._gameDiag)
+		self.gameButton.grid(column=0, row=0, sticky=N+S+E+W, padx=5, pady=5)
+		self.gameTextField = ttk.Entry(self.labelFrame, width=self.entrylen, textvariable=self.directories["Game"])
+		self.gameTextField.grid(column=1, row=0, padx=5, pady=5)
+		self.modButton = ttk.Button(self.labelFrame, text="Mod Directory", command=self._modDiag)
+		self.modButton.grid(column=0, row=1, sticky=N+S+E+W, padx=5, pady=5)
+		self.modTextField = ttk.Entry(self.labelFrame, width=self.entrylen, textvariable=self.directories["Mods"])
+		self.modTextField.grid(column=1, row=1, padx=5, pady=5)
+		
+		self.saveButton = ttk.Button(self.labelFrame, text="Save Changes")
+		self.saveButton.grid(column=0, row=2, columnspan=2, padx=5, pady=5)
+		
 
 # Tabs for ease of use
 
