@@ -10,12 +10,15 @@ from tkinter import messagebox as msg
 
 import sys
 import os
+from os.path import expanduser
 import json
+
+home = expanduser("~")
 
 # Loading Factorio mods externally
 with open("factorio-mods.json", "r") as json_file:
     json_data = json.load(json_file)
-	
+
 mods = json_data["Mods"]
 mod_dir = json_data["Mod Directory"]
 game_dir = json_data["Game Directory"]
@@ -35,24 +38,27 @@ win.resizable(False, False)
 def mbox(mod):
     text = "Launching "+mod
     msg.showinfo("Launching", text)
-    
+
 def launch(mod=""):
-	if game_dir:
-		launcher = game_dir
-	else:
-		launcher = "steam -applaunch 427520"
-	if mod:
-		launcher = launcher + " --mod-directory ~/.factorio/" + mod
-	print(launcher)
-	os.system(launcher)
-	
+    if game_dir:
+        launcher = game_dir
+    else:
+        if os.name == "nt":
+            launcher = '""%s" %s"' % ("%ProgramFiles(x86)%\\Steam\\steam", "-applaunch 427520")
+        else:
+            launcher = "steam -applaunch 427520"
+    if mod:
+        launcher = launcher + " --mod-directory " + home + "/.factorio/" + mod
+    print(launcher)
+    os.system(launcher)
+
 def callback(mod):
-	mbox(mod + " Factorio")
-	launch(mods[mod])
-	cancel()
+    mbox(mod + " Factorio")
+    launch(mods[mod])
+    cancel()
 
 def make_callback(mod):
-	return (lambda: callback(mod))
+    return (lambda: callback(mod))
 
 # Factorio Starting Options
 def cancel():
@@ -63,9 +69,9 @@ def cancel():
 # Add Buttons
 buttons = []
 for mod in mods:
-	print(mod + " " + mods[mod])
-	button = ttk.Button(win, text=mod+" Factorio", command=make_callback(mod))
-	button.pack(fill=X, padx=10, pady=2)
+    print(mod + " " + mods[mod])
+    button = ttk.Button(win, text=mod+" Factorio", command=make_callback(mod))
+    button.pack(fill=X, padx=10, pady=2)
 
 can = ttk.Button(win, text="Cancel", command=cancel)
 can.pack(fill=X, padx=10, pady=2)
