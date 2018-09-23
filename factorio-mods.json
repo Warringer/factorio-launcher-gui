@@ -1,5 +1,9 @@
-{
-	"Vanilla": "",
-	"Vanilla Plus": "vanillaplus",
-	"AngelsBobs": "angelsbobs"
+{ 
+	"Mods" : 
+	{
+		"Vanilla": "",
+		"Vanilla Plus": "vanillaplus",
+		"AngelsBobs": "angelsbobs"
+	},
+	"Mod Directory" : ""
 }

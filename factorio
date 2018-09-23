@@ -16,8 +16,10 @@ import json
 with open("factorio-mods.json", "r") as json_file:
     json_data = json.load(json_file)
 	
-mods = json_data
-print(mods)
+mods = json_data["Mods"]
+mod_dir = json_data["Mod Directory"]
+#print(mods)
+#print(mod_dir)
 
 # Create Instance
 win = tk.Tk()
