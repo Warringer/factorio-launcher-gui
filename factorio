@@ -4,11 +4,20 @@
 # imports
 #==================
 import tkinter as tk
+from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox as msg
 
 import sys
-import subprocess
+import os
+import json
+
+# Loading Factorio mods externally
+with open("factorio-mods.json", "r") as json_file:
+    json_data = json.load(json_file)
+	
+mods = json_data
+print(mods)
 
 # Create Instance
 win = tk.Tk()
@@ -23,6 +32,21 @@ win.resizable(False, False)
 def mbox(mod):
     text = "Launching "+mod
     msg.showinfo("Launching", text)
+    
+def launch(mod=""):
+	launcher = "steam -applaunch 427520"
+	if mod:
+		launcher = launcher + " --mod-directory ~/.factorio/" + mod
+	print(launcher)
+	os.system(launcher)
+	
+def callback(mod):
+	mbox(mod + " Factorio")
+	launch(mods[mod])
+	cancel()
+
+def make_callback(mod):
+	return (lambda: callback(mod))
 
 # Factorio Starting Options
 def cancel():
@@ -30,34 +54,15 @@ def cancel():
     win.destroy()
     #exit()
 
-def factorio():
-    mbox("Unmodded Factorio")
-    subprocess.Popen("factorio-vanilla")
-    cancel()
-
-def factorio_plus():
-    mbox("Factorio Plus")
-    subprocess.Popen("factorio-vanillaplus")
-    cancel()
-
-def factorio_angelsbobs():
-    mbox("AngelsBobs Factorio")
-    subprocess.Popen("factorio-angelsbobs")
-    cancel()
-
 # Add Buttons
-fac = ttk.Button(win, text="Vanilla Factorio", command=factorio)
-fac.grid(column=0, row=0, padx=2, pady=2)
-
-fac_plus = ttk.Button(win, text="Factorio Plus", command=factorio_plus)
-fac_plus.grid(column=0, row=1, padx=2, pady=2)
-
-fac_ab = ttk.Button(win, text="Factorio AngelsBobs", command=factorio_angelsbobs)
-fac_ab.grid(column=0, row=2, padx=2, pady=2)
+buttons = []
+for mod in mods:
+	print(mod + " " + mods[mod])
+	button = ttk.Button(win, text=mod+" Factorio", command=make_callback(mod))
+	button.pack(fill=X, padx=10, pady=2)
 
 can = ttk.Button(win, text="Cancel", command=cancel)
-can.grid(column=0, row=3, padx=2, pady=2)
-
+can.pack(fill=X, padx=10, pady=2)
 
 #==================
 # Starting GUI
