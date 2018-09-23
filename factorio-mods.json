@@ -1,13 +1,11 @@
 {
-	"Mods" :
-	{
-		"Vanilla": "",
-		"Vanilla Plus": "vanillaplus",
-		"AngelsBobs": "angelsbobs"
-	},
-	"Directories" :
-	{	
-		"Mods" : "",
-		"Game" : ""
-	}
+    "Mods": {
+        "AngelsBobs": "angelsbobs",
+        "Vanilla Plus": "vanillaplus",
+        "Vanilla": ""
+    },
+    "Directories": {
+        "Game": "",
+        "Mods": ""
+    }
 }
