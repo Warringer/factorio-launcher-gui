@@ -19,8 +19,11 @@ home = expanduser("~")
 with open("factorio-mods.json", "r") as json_file:
     json_data = json.load(json_file)
 
-mods = json_data
-print(mods)
+mods = json_data["Mods"]
+mod_dir = json_data["Mod Directory"]
+game_dir = json_data["Game Directory"]
+#print(mods)
+#print(mod_dir)
 
 # Create Instance
 win = tk.Tk()
@@ -35,6 +38,24 @@ win.resizable(False, False)
 def mbox(mod):
     text = "Launching "+mod
     msg.showinfo("Launching", text)
+
+def launch(mod=""):
+	if game_dir:
+		launcher = game_dir
+	else:
+		launcher = "steam -applaunch 427520"
+	if mod:
+		launcher = launcher + " --mod-directory ~/.factorio/" + mod
+	print(launcher)
+	os.system(launcher)
+
+def callback(mod):
+	mbox(mod + " Factorio")
+	launch(mods[mod])
+	cancel()
+
+def make_callback(mod):
+	return (lambda: callback(mod))
 
 def launch(mod=""):
     if os.name == "nt":
