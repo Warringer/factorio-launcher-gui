@@ -13,7 +13,7 @@ import os
 import json
 
 # Loading Factorio mods externally
-with open("mods.json", "r") as json_file:
+with open("factorio-mods.json", "r") as json_file:
     json_data = json.load(json_file)
 	
 mods = json_data
