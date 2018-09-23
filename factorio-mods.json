@@ -1,11 +1,5 @@
-<<<<<<< HEAD
 {
-	"Vanilla": "",
-	"Vanilla Plus": "vanillaplus",
-	"AngelsBobs": "angelsbobs"
-=======
-{ 
-	"Mods" : 
+	"Mods" :
 	{
 		"Vanilla": "",
 		"Vanilla Plus": "vanillaplus",
@@ -13,5 +7,4 @@
 	},
 	"Mod Directory" : "",
 	"Game Directory" : ""
->>>>>>> upstream/master
 }
