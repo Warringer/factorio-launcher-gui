@@ -17,60 +17,86 @@ with open("factorio-mods.json", "r") as json_file:
     json_data = json.load(json_file)
 	
 mods = json_data["Mods"]
-mod_dir = json_data["Mod Directory"]
-game_dir = json_data["Game Directory"]
+directories = json_data["Directories"]
 #print(mods)
 #print(mod_dir)
 
 # Create Instance
-win = tk.Tk()
+main = tk.Tk()
 
 # Add Title
-win.title("Factorio Games")
+main.title("Factorio Games")
 
 # Disable Resizing
-win.resizable(False, False)
+main.resizable(False, False)
 
-# Helper Functions
-def mbox(mod):
-    text = "Launching "+mod
-    msg.showinfo("Launching", text)
-    
-def launch(mod=""):
-	if game_dir:
-		launcher = game_dir
-	else:
-		launcher = "steam -applaunch 427520"
-	if mod:
-		launcher = launcher + " --mod-directory ~/.factorio/" + mod
-	print(launcher)
-	os.system(launcher)
+# Launcher Class
+class Launcher:
+	def __init__(self, rootTab, mods):
+		self.frame = ttk.Frame(rootTab)
+		self.mods = mods
+		self.root = rootTab
+		self._addButtons()
 	
-def callback(mod):
-	mbox(mod + " Factorio")
-	launch(mods[mod])
-	cancel()
+	def _addButtons(self):
+		# Add Buttons
+		# Add Launcher Button
+		buttons = []
+		x = 0
+		for mod in self.mods:
+			print(mod + " " + self.mods[mod])
+			button = ttk.Button(self.root, text=mod+" Factorio", command=self._make_callback(mod))
+			button.grid(column=0, row=x, padx=10, pady=2, sticky=N+S+E+W)
+			x = x + 1
+		
+		# Cancel Button
+		can = ttk.Button(self.root, text="Cancel", command=self._cancel)
+		can.grid(column=0, row=x, padx=10, pady=2, sticky=N+S+E+W)
+		
+	def _mbox(self, mod):
+		text = "Launching "+mod
+		msg.shomainfo("Launching", text)
+		
+	def _launch(self, mod=""):
+		if game_dir:
+			launcher = game_dir
+		else:
+			launcher = "steam -applaunch 427520"
+		if mod:
+			launcher = launcher + " --mod-directory ~/.factorio/" + mod
+		print(launcher)
+		os.system(launcher)
+	
+	def _callback(self, mod):
+		self._mbox(mod + " Factorio")
+		self._launch(mods[mod])
+		self._cancel()
 
-def make_callback(mod):
-	return (lambda: callback(mod))
+	def _make_callback(self, mod):
+		return (lambda: _callback(mod))
 
-# Factorio Starting Options
-def cancel():
-    win.quit()
-    win.destroy()
-    #exit()
+	# Factorio Starting Options
+	def _cancel(self):
+		main.quit()
+		main.destroy()
+		#exit()
+		
+class Files:
+	def __init__(self, rootTab, directories):
+		self.frame = ttk.Frame(rootTab)
+		self.directories = directories
 
-# Add Buttons
-buttons = []
-for mod in mods:
-	print(mod + " " + mods[mod])
-	button = ttk.Button(win, text=mod+" Factorio", command=make_callback(mod))
-	button.pack(fill=X, padx=10, pady=2)
+# Tabs for ease of use
 
-can = ttk.Button(win, text="Cancel", command=cancel)
-can.pack(fill=X, padx=10, pady=2)
+tabControl = ttk.Notebook(main)
+
+tab1 = Launcher(tabControl, mods)
+tabControl.add(tab1.frame, text="Launch Factorio")
+tab2 = Files(tabControl, directories)
+tabControl.add(tab2.frame, text="Directories")
+tabControl.pack(expand=1, fill="both")
 
 #==================
 # Starting GUI
 #==================
-win.mainloop()
+main.mainloop()

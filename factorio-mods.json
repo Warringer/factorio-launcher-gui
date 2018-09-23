@@ -5,6 +5,9 @@
 		"Vanilla Plus": "vanillaplus",
 		"AngelsBobs": "angelsbobs"
 	},
-	"Mod Directory" : "",
-	"Game Directory" : ""
+	"Directories" :
+	{	
+		"Mods" : "",
+		"Game" : ""
+	}
 }
