@@ -56,10 +56,10 @@ class Launcher:
 		
 	def _mbox(self, mod):
 		text = "Launching "+mod
-		msg.shomainfo("Launching", text)
+		msg.showinfo("Launching", text)
 		
 	def _launch(self, mod=""):
-		if game_dir:
+		if self.gamedir:
 			launcher = self.gamedir
 		else:
 			if os.name == "nt":
@@ -77,7 +77,7 @@ class Launcher:
 		self._cancel()
 
 	def _make_callback(self, mod):
-		return (lambda: _callback(mod))
+		return (lambda: self._callback(mod))
 
 	# Factorio Starting Options
 	def _cancel(self):
@@ -94,7 +94,7 @@ class Files:
 
 tabControl = ttk.Notebook(main)
 
-tab1 = Launcher(tabControl, mods)
+tab1 = Launcher(tabControl, mods, directories)
 tabControl.add(tab1.frame, text="Launch Factorio")
 tab2 = Files(tabControl, directories)
 tabControl.add(tab2.frame, text="Directories")
