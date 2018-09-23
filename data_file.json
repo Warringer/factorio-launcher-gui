@@ -1,0 +1,11 @@
+{
+    "Mods": {
+        "Vanilla": "",
+        "Vanilla Plus": "vanillaplus",
+        "AngelsBobs": "angelsbobs"
+    },
+    "Directories": {
+        "Mods": "/home/warringer/.blender",
+        "Game": ""
+    }
+}
