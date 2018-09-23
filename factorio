@@ -18,6 +18,7 @@ with open("factorio-mods.json", "r") as json_file:
 	
 mods = json_data["Mods"]
 mod_dir = json_data["Mod Directory"]
+game_dir = json_data["Game Directory"]
 #print(mods)
 #print(mod_dir)
 
@@ -36,7 +37,10 @@ def mbox(mod):
     msg.showinfo("Launching", text)
     
 def launch(mod=""):
-	launcher = "steam -applaunch 427520"
+	if game_dir:
+		launcher = game_dir
+	else:
+		launcher = "steam -applaunch 427520"
 	if mod:
 		launcher = launcher + " --mod-directory ~/.factorio/" + mod
 	print(launcher)
