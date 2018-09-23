@@ -10,12 +10,15 @@ from tkinter import messagebox as msg
 
 import sys
 import os
+from os.path import expanduser
 import json
+
+home = expanduser("~")
 
 # Loading Factorio mods externally
 with open("factorio-mods.json", "r") as json_file:
     json_data = json.load(json_file)
-	
+
 mods = json_data
 print(mods)
 
@@ -32,14 +35,17 @@ win.resizable(False, False)
 def mbox(mod):
     text = "Launching "+mod
     msg.showinfo("Launching", text)
-    
+
 def launch(mod=""):
-	launcher = "steam -applaunch 427520"
+    if os.name == "nt":
+        launcher = "\"C:\\Program Files (x86)\\Steam\\Steam\\steam" applaunch 427520"
+    else:
+	       launcher = "steam -applaunch 427520"
 	if mod:
-		launcher = launcher + " --mod-directory ~/.factorio/" + mod
+		launcher = launcher + " --mod-directory " + home + "/.factorio/" + mod
 	print(launcher)
 	os.system(launcher)
-	
+
 def callback(mod):
 	mbox(mod + " Factorio")
 	launch(mods[mod])
