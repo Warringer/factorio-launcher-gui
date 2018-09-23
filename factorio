@@ -11,14 +11,18 @@ from tkinter import filedialog as fDiag
 
 import sys
 import os
+from os.path import expanduser
 import json
 
+
 SETTINGS_FILE = "factorio-mods.json"
+
+HOME = expanduser("~")
 
 # Loading Factorio mods externally
 with open(SETTINGS_FILE, "r") as json_file:
     json_data = json.load(json_file)
-	
+
 mods = json_data["Mods"]
 directories = json_data["Directories"]
 #print(mods)
@@ -40,6 +44,7 @@ class Launcher:
 		self.mods = mods
 		self.root = rootTab
 		self.gamedir = directories["Game"]
+		self.moddir = directories["Mods"]
 		self._addButtons()
 	
 	def _addButtons(self):
@@ -72,7 +77,10 @@ class Launcher:
 			else:
 				launcher = "steam -applaunch 427520"
 		if mod:
-			launcher = launcher + " --mod-directory ~/.factorio/" + mod
+			if self.moddir:
+				launcher = launcher + " --mod-directory " + self.moddir + mod
+			else:
+				launcher = launcher + " --mod-directory " + HOME + "/.factorio/" + mod
 		print(launcher)
 		os.system(launcher)
 	
@@ -147,6 +155,7 @@ class Directories:
 		self.saveButton = ttk.Button(self.labelFrame, text="Save Changes", command=self._save)
 		self.saveButton.grid(column=0, row=2, columnspan=2, padx=5, pady=5)
 		
+
 
 # Tabs for ease of use
 
