@@ -149,7 +149,7 @@ main.title("Factorio Games")
 
 # Disable Resizing
 main.resizable(False, False)
-print(mods.size())
+print(mods.len())
 main.geometry("500x200")
 
 # Tabs for ease of use
