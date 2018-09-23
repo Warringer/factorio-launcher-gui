@@ -1,2 +1,2 @@
 #!/bin/bash
-steam -applaunch 427520 --mod-directory /home/warringer/.factorio/vanillaplus/
+steam -applaunch 427520 --mod-directory $HOME/.factorio/vanillaplus/
