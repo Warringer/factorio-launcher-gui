@@ -178,18 +178,12 @@ class Mods:
         '''Initialize the Mods Class with the root Element and the Data'''
         self.data = data
         self.frame = ttk.Frame(rootTab)
-        self.dirButtons = {}
-        self.remButtons = {}
-        self.dirNames = {}
-        self.modNames = {}
         self.entrylen = 20
         self._drawInterface()
 
     def _saveData(self):
         '''Saves the changed Mod data to file'''
-        print(json.dumps(self.data))
-        self.data.mods = self.dirNames
-        print(json.dumps(self.data))
+
             
 
     def _dirDiag(self, dirName):
@@ -204,46 +198,13 @@ class Mods:
 
     def _changeDir(self, mod):
         '''Callback to change the Directory for a mod'''
-        modDir = self.dirNames[mod].get()
-        result = self._dirDiag(modDir)
-        path = os.path.normpath(result)
-        res = path.split(os.sep)
-        modDir = res[-1]
-        self.dirNames[mod].set(modDir)
         
     def _m_changeDir(self, mod):
         '''Returns the Lambda for the callback'''
-        return ( lambda: self._changeDir(mod))
 
     def _drawInterface(self):
         '''Draws the interface for the Mod Tab'''
-        self.labelFrame = ttk.LabelFrame(self.frame, text="Mod Directories")
-        self.labelFrame.pack(fill="both", expand=True)
-        label1 = ttk.Label(self.labelFrame, text="ModPack Name")
-        label1.grid(column=0, row=0)
-        label2 = ttk.Label(self.labelFrame, text="Directory Name")
-        label2.grid(column=1, row=0)
-        x = 1
-        for mod in self.data.mods:
-            dirName = tk.StringVar()
-            modName = tk.StringVar()
-            dirName.set(self.data.mods[mod])
-            modName.set(mod)
-            self.dirNames[mod] = dirName
-            self.modNames[mod] = modName
-            dirNameField = ttk.Entry(self.labelFrame, width=self.entrylen, textvariable=dirName)
-            dirNameField.grid(column=1, row=x, padx=5, pady=5)
-            modNameField = ttk.Entry(self.labelFrame, width=self.entrylen, textvariable=modName)
-            modNameField.grid(column=0, row=x, padx=5, pady=5)
-            dirButton = ttk.Button(self.labelFrame, text="Change Directory", command=self._m_changeDir(mod))
-            dirButton.grid(column=2, row=x, padx=5, pady=5)
-            self.dirButtons[mod] = dirButton
-            remButton = ttk.Button(self.labelFrame, text="Remove")
-            remButton.grid(column=3, row=x, padx=5, pady=5)
-            self.remButtons[mod] = remButton
-            x = x + 1
-        self.addButton = ttk.Button(self.labelFrame, text="Add Mod Pack")
-        self.addButton.grid(column=2, row=x, padx=5, pady=5, columnspan=2)
+
 
 gamedata = Data(SETTINGS_FILE)
 
