@@ -17,7 +17,7 @@ import json
 import platform
 import subprocess
 
-DEBUG = True
+DEBUG = False
 
 SETTINGS_FILE = "factorio-mods.json"
 HOME = expanduser("~")
