@@ -336,10 +336,16 @@ class Mods:
         modName = self.modPackName.get()
         if modName:
             self.data.mods[modName] = self.modPackPath.get()
-            if msg.askyesno("Save", "Do you want to change the name of the Mod Pack or save as new?"):
+            confirm = msg.askyesnocancel("Save", "Do you want to change the name of the Mod Pack or save as new?")
+            if confirm:
                 del self.data.mods[self.modName]
-            self.data.save_data()
-            self._repopulate_listBox()
+                self.data.save_data()
+                self._repopulate_listBox()
+            elif confirm == None:
+                return
+            else:
+                self.data.save_data()
+                self._repopulate_listBox()
 
     def _delete_mod(self):
         '''Delete a Mod Pack'''
