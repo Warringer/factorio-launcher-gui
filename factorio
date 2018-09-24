@@ -272,6 +272,12 @@ class Mods:
 
     def _drawInterface(self):
         '''Draws the interface for the Mod Tab'''
+        self.labelFrame = ttk.LabelFrame(self.frame, text="Mod Packs")
+        self.labelFrame.pack(fill="both", expand=True)
+        self.listBox = tk.Listbox(self.labelFrame, selectmode="browse", height=10)
+        for mod in self.data.mods:
+            self.listBox.insert("end", mod)
+        self.listBox.grid(column=0, row=0, sticky=N+S+E+W, padx=5, pady=5)
         
         
 
