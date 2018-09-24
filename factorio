@@ -40,6 +40,7 @@ class Data:
         self.gameDir = ""
         self.modsDir = ""
         self.isSteam = self._has_steam()
+        self.launcher = None
 
     def _has_steam(self):
         if platform.system() == "Windows":
@@ -131,24 +132,46 @@ class Launcher:
         '''Initialize the Launcher Class with the root Element and the Data'''
         self.frame = ttk.Frame(rootTab)
         self.data = data
+        self.data.launcher = self
+        self.buttons = []
         self._add_buttons()
 
     def _add_buttons(self):
         '''Dynamically add the Launcher Buttons'''
         self.labelFrame = ttk.LabelFrame(self.frame, text="Launcher")
         self.labelFrame.pack(fill="both", expand=True)
-        buttons = []
-        x = 0
+        
+        self._add_launcher_buttons()
+        self._add_cancel_button()
+
+    def repopulate_buttons(self):
+        '''Repopulates the Launcher Buttons on Adding or removing new Mod Packs'''
+        self._destroy_buttons()
+        self._add_launcher_buttons()
+        self._add_cancel_button()
+
+    def _destroy_buttons(self):
+        '''Removed all Launcher Buttons'''
+        debug(self.buttons)
+        for button in self.buttons:
+            debug(button)
+            button.pack_forget()
+        self.buttons.clear()
+
+    def _add_launcher_buttons(self):
+        '''Adds the Launcher Buttons'''
         for mod in self.data.mods:
             debug(mod + " " + self.data.mods[mod])
             button = ttk.Button(self.labelFrame , text=mod+" Factorio", command=self._m_launch(mod))
             button.pack(fill="both", expand=True)
-            x = x + 1
+            self.buttons.append(button)     
 
-        # Cancel Button
-        self.can = ttk.Button(self.labelFrame , text="Cancel", command=self._cancel)
-        self.can.pack(fill="both", expand=True)
-
+    def _add_cancel_button(self):
+        '''Adds a Cancel Button'''
+        button = ttk.Button(self.labelFrame , text="Cancel", command=self._cancel)
+        button.pack(fill="both", expand=True)
+        self.buttons.append(button)
+        
     def _mbox(self, mod):
         '''Display a Message Box'''
         text = "Launching "+mod
@@ -299,6 +322,7 @@ class Mods:
         self.listBox.delete(0, END)
         for mod in self.data.mods:
             self.listBox.insert("end", mod)
+        self.data.launcher.repopulate_buttons()
 
     def _save_mod(self):
         '''Save a mod or a changed mod pack'''
