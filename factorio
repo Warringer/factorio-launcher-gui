@@ -212,7 +212,7 @@ class Launcher:
             if self.data.system == "Windows":
                 launcher = launcher + '" --mod-directory "%s""' % (path)
             else:
-                launcher = launcher + " --mod-directoty " + path
+                launcher = launcher + " --mod-directory " + path
         debug(launcher)
         if not DEBUG:
             os.system(launcher)
