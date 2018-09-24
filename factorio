@@ -96,14 +96,14 @@ class Data:
         '''Returns the Default Mods directories for Windows, Mac and Linux'''
         if self.modsDir == "":
             if self.system == "Linux":
-                self.modsDirt = os.path.join(HOME, ".factorio")
+                self.modsDir = os.path.join(HOME, ".factorio")
             elif self.system == "Windows":
-                self.modsDirt = os.path.join(os.getenv('APPDATA'), "Factorio")
+                self.modsDir = os.path.join(os.getenv('APPDATA'), "Factorio")
             elif self.system == "Darwin":
-                self.modsDirt = os.path.join(HOME, "Library", "Application Support", "factorio")
+                self.modsDir = os.path.join(HOME, "Library", "Application Support", "factorio")
             else:
-                self.modsDirt = ""
-        return self.modsDirt
+                self.modsDir = ""
+        return self.modsDir
 
     def _get_default_game_dir(self):
         '''Returns the default Game directories for Windows, Mac and Linux'''
