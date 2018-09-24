@@ -12,7 +12,10 @@ from tkinter import filedialog as fDiag
 import sys
 import os
 from os.path import expanduser
+import os.path
 import json
+import platform
+import subprocess
 
 
 SETTINGS_FILE = "factorio-mods.json"
@@ -27,7 +30,20 @@ class Data:
         self.gamedir = ""
         self.modsdir = ""
         self.mods = {}
+        self.system = platform.system()
         self.load_data()
+        self.gameDir = ""
+        self.modsDir = ""
+        self.isSteam = self._has_steam()
+
+    def _has_steam(self):
+        cmd = "where" if platform.system() == "Windows" else "which"
+        try: 
+            subprocess.call([cmd, "steam"])
+            return True
+        except: 
+            return False
+        
 
     def save_data(self):
         '''Saves the Data into the Settings File'''
@@ -52,8 +68,51 @@ class Data:
             self.mods["Vanilla"] = ""
             self.save_data()
 
-    def get_default_game_dir(self):
-        '''Returns the Default Game directories for Windows, Mac and Linux'''
+    def get_game_dir(self):
+        '''Returns the Game directory'''#
+        if self.gamedir:
+            return self.gamedir
+        else:
+            return self._get_default_game_dir()
+
+    def get_mods_dir(self):
+        '''Returns the Mods directory'''
+        if self.modsdir:
+            return self.modsdir
+        else:
+            return self._get_default_mods_dir()                        
+
+    def _get_default_mods_dir(self):
+        '''Returns the Default Mods directories for Windows, Mac and Linux'''
+        if self.modsDir == "":
+            if self.system == "Linux":
+                self.modsDirt = os.path.join(HOME, ".factorio")
+            elif self.system == "Windows":
+                self.modsDirt = os.path.join(os.getenv('APPDATA'), "Factorio")
+            elif self.system == "Darwin":
+                self.modsDirt = os.path.join(HOME, "Library", "Application Support", "factorio")
+            else:
+                self.modsDirt = ""
+        return self.modsDirt
+
+    def _get_default_game_dir(self):
+        '''Returns the default Game directories for Windows, Mac and Linux'''
+        if self.gameDir == "":
+            if self.system == "Linux":
+                self.gameDir = os.path.join(HOME, ".factorio")
+            elif self.system == "Windows":
+                if self.isSteam:
+                    self.gameDir = os.path.join("C:/", "Program Files (x86)", "Steam", "steamapps", "common", "Factorio")
+                else:    
+                    self.gameDir = os.path.join("C:/", "Program Files", "Factorio")
+            elif self.system == "Darwin":
+                if self.isSteam:
+                    self.gameDir = os.path.join(HOME, "Library", "Application Support", "Steam", "steamapps", "common", "Factorio", "factorio.app", "Contents")
+                else:
+                    self.gameDir = os.path.join("Applications", "factorio.app", "Contents")
+            else:
+                self.gameDir = ""
+        return self.gameDir
 
 # Launcher Class
 class Launcher:
@@ -91,15 +150,22 @@ class Launcher:
         if self.data.gamedir:
             launcher = self.data.gamedir
         else:
-            if os.name == "nt":
-                launcher = '""%s" %s"' % ("%ProgramFiles(x86)%\\Steam\\steam", "-applaunch 427520")
+            if self.data.isSteam:
+                if self.data.system == "Windows":
+                    launcher = '""%s" %s"' % (self.data.get_game_dir(), "-applaunch 427520")
+                else:
+                    launcher = "steam -applaunch 427520"
             else:
-                launcher = "steam -applaunch 427520"
-        if mod:
-            if self.moddir:
-                launcher = launcher + " --mod-directory " + self.data.modsdir + "/" + mod
+                if self.data.system == "Windows":
+                    launcher = os.path.join(self.data.get_game_dir(), "factorio.exe")
+                else:
+                    launcher = os.path.join(self.data.get_game_dir(), "factorio")
+        if self.data.mods[mod]:
+            if self.data.get_mods_dir():
+                launcher = launcher + " --mod-directory " + self.data.get_mods_dir() + "/" + self.data.mods[mod]
             else:
-                launcher = launcher + " --mod-directory " + HOME + "/.factorio/" + mod
+                launcher = launcher + " --mod-directory " + HOME + "/.factorio/" + self.data.mods[mod]
+        print(launcher)
         #os.system(launcher)
         self._cancel()
 
