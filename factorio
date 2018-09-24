@@ -42,13 +42,18 @@ class Data:
         self.isSteam = self._has_steam()
 
     def _has_steam(self):
-        cmd = "where" if platform.system() == "Windows" else "which"
-        try: 
+        if platform.system() == "Windows":
+            if os.path.isfile(os.getenv("programfiles(x86)") + "/Steam/Steam.exe"):
+                return True
+            else:
+                return False
+        cmd = "which"
+        try:
             subprocess.call([cmd, "steam"])
             return True
-        except: 
+        except:
             return False
-        
+
 
     def save_data(self):
         '''Saves the Data into the Settings File'''
@@ -85,7 +90,7 @@ class Data:
         if self.modsdir:
             return self.modsdir
         else:
-            return self._get_default_mods_dir()                        
+            return self._get_default_mods_dir()
 
     def _get_default_mods_dir(self):
         '''Returns the Default Mods directories for Windows, Mac and Linux'''
@@ -108,7 +113,7 @@ class Data:
             elif self.system == "Windows":
                 if self.isSteam:
                     self.gameDir = os.path.join(os.getenv("programfiles(x86)"), "Steam", "steam")
-                else:    
+                else:
                     self.gameDir = os.path.join("C:/", "Program Files", "Factorio")
             elif self.system == "Darwin":
                 if self.isSteam:
@@ -270,6 +275,12 @@ class Mods:
         options['parent'] = main
         return fDiag.askdirectory(**options)
 
+    def _change_dir(self, mod):
+        '''Callback to change the Directory for a mod'''
+
+    def _m_change_dir(self, mod):
+        '''Returns the Lambda for the callback'''
+
     def _drawInterface(self):
         '''Draws the interface for the Mod Tab'''
         self.labelFrame = ttk.LabelFrame(self.frame, text="Mod Packs")
@@ -279,9 +290,6 @@ class Mods:
             self.listBox.insert("end", mod)
         self.listBox.grid(column=0, row=0, sticky=N+S+E+W, padx=5, pady=5)
         
-        
-
-
 gamedata = Data(SETTINGS_FILE)
 
 # Create Instance
