@@ -4,6 +4,9 @@
         "Mods": ""
     },
     "Mods": {
-        "Vanilla": ""
+        "Vanilla": "",
+        "Vanilla Plus": "vanillaplus",
+        "Test2": "vanillaplus",
+        "Test": "vanillaplus"
     }
 }

@@ -12,32 +12,62 @@ from tkinter import filedialog as fDiag
 import sys
 import os
 from os.path import expanduser
+import os.path
 import json
+import platform
+import subprocess
 
+DEBUG = True
 
 SETTINGS_FILE = "factorio-mods.json"
-
 HOME = expanduser("~")
+
+def debug(a):
+    '''Helper functon for debugging'''
+    if DEBUG:
+        print(a)
 
 class Data:
 
-    def __init__(self):
+    def __init__(self, filename):
+        '''Initialize the Data Fields'''
+        self.filename = filename
         self.gamedir = ""
         self.modsdir = ""
         self.mods = {}
-        self.loadData()
+        self.system = platform.system()
+        self.load_data()
+        self.gameDir = ""
+        self.modsDir = ""
+        self.isSteam = self._has_steam()
+        self.launcher = None
 
-    def saveData(self):
+    def _has_steam(self):
+        if platform.system() == "Windows":
+            if os.path.isfile(os.getenv("programfiles(x86)") + "/Steam/Steam.exe"):
+                return True
+            else:
+                return False
+        cmd = "which"
+        try:
+            subprocess.call([cmd, "steam"])
+            return True
+        except:
+            return False
+
+
+    def save_data(self):
+        '''Saves the Data into the Settings File'''
         data = {}
         data["Directories"] = {}
         data["Directories"]["Game"] = self.gamedir
         data["Directories"]["Mods"] = self.modsdir
         data["Mods"] = self.mods
-        print(data)
-        with open(SETTINGS_FILE, "w") as write_file:
+        with open(self.filename, "w") as write_file:
             json.dump(data, write_file, indent=4)
 
-    def loadData(self):
+    def load_data(self):
+        '''Attempts to Load the Settings File, if there is none, create one'''
         try:
             with open(SETTINGS_FILE, "r") as json_file:
                 json_data = json.load(json_file)
@@ -45,71 +75,153 @@ class Data:
             self.modsdir = json_data["Directories"]["Mods"]
             self.mods = json_data["Mods"]
         except:
-            print("Creating new settings file")
+            debug("Creating new settings file")
             self.mods["Vanilla"] = ""
-            self.saveData()
+            self.save_data()
+
+    def get_game_dir(self):
+        '''Returns the Game directory'''#
+        if self.gamedir:
+            return self.gamedir
+        else:
+            return self._get_default_game_dir()
+
+    def get_mods_dir(self):
+        '''Returns the Mods directory'''
+        if self.modsdir:
+            return self.modsdir
+        else:
+            return self._get_default_mods_dir()
+
+    def _get_default_mods_dir(self):
+        '''Returns the Default Mods directories for Windows, Mac and Linux'''
+        if self.modsDir == "":
+            if self.system == "Linux":
+                self.modsDir = os.path.join(HOME, ".factorio")
+            elif self.system == "Windows":
+                self.modsDir = os.path.join(os.getenv('APPDATA'), "Factorio")
+            elif self.system == "Darwin":
+                self.modsDir = os.path.join(HOME, "Library", "Application Support", "factorio")
+            else:
+                self.modsDir = ""
+        return self.modsDir
+
+    def _get_default_game_dir(self):
+        '''Returns the default Game directories for Windows, Mac and Linux'''
+        if self.gameDir == "":
+            if self.system == "Linux":
+                self.gameDir = os.path.join(HOME, ".factorio")
+            elif self.system == "Windows":
+                if self.isSteam:
+                    self.gameDir = os.path.join(os.getenv("programfiles(x86)"), "Steam", "steam")
+                else:
+                    self.gameDir = os.path.join("C:/", "Program Files", "Factorio")
+            elif self.system == "Darwin":
+                if self.isSteam:
+                    self.gameDir = os.path.join(HOME, "Library", "Application Support", "Steam", "steamapps", "common", "Factorio", "factorio.app", "Contents")
+                else:
+                    self.gameDir = os.path.join("Applications", "factorio.app", "Contents")
+            else:
+                self.gameDir = ""
+        return self.gameDir
 
 # Launcher Class
 class Launcher:
 
     def __init__(self, rootTab, data):
+        '''Initialize the Launcher Class with the root Element and the Data'''
         self.frame = ttk.Frame(rootTab)
         self.data = data
-        self._addButtons()
+        self.data.launcher = self
+        self.buttons = []
+        self._add_buttons()
 
-    def _addButtons(self):
-        # Add Buttons
-        # Add Launcher Button
+    def _add_buttons(self):
+        '''Dynamically add the Launcher Buttons'''
         self.labelFrame = ttk.LabelFrame(self.frame, text="Launcher")
         self.labelFrame.pack(fill="both", expand=True)
-        buttons = []
-        x = 0
-        for mod in self.data.mods:
-            print(mod + " " + self.data.mods[mod])
-            button = ttk.Button(self.labelFrame , text=mod+" Factorio", command=self._make_callback(mod))
-            button.pack(fill="both", expand=True)
-            x = x + 1
 
-        # Cancel Button
-        self.can = ttk.Button(self.labelFrame , text="Cancel", command=self._cancel)
-        self.can.pack(fill="both", expand=True)
+        self._add_launcher_buttons()
+        self._add_cancel_button()
+
+    def repopulate_buttons(self):
+        '''Repopulates the Launcher Buttons on Adding or removing new Mod Packs'''
+        self._destroy_buttons()
+        self._add_launcher_buttons()
+        self._add_cancel_button()
+
+    def _destroy_buttons(self):
+        '''Removed all Launcher Buttons'''
+        for button in self.buttons:
+            button.pack_forget()
+        self.buttons.clear()
+
+    def _add_launcher_buttons(self):
+        '''Adds the Launcher Buttons'''
+        for mod in self.data.mods:
+            debug(mod + " " + self.data.mods[mod])
+            button = ttk.Button(self.labelFrame , text=mod+" Factorio", command=self._m_launch(mod))
+            button.pack(fill="both", expand=True)
+            self.buttons.append(button)
+
+    def _add_cancel_button(self):
+        '''Adds a Cancel Button'''
+        button = ttk.Button(self.labelFrame , text="Cancel", command=self._cancel)
+        button.pack(fill="both", expand=True)
+        self.buttons.append(button)
 
     def _mbox(self, mod):
+        '''Display a Message Box'''
         text = "Launching "+mod
         msg.showinfo("Launching", text)
 
     def _launch(self, mod=""):
+        '''Launches the Actual game'''
+        self._mbox(mod + " Factorio")
         if self.data.gamedir:
             launcher = self.data.gamedir
         else:
-            if os.name == "nt":
-                launcher = '""%s" %s"' % ("%ProgramFiles(x86)%\\Steam\\steam", "-applaunch 427520")
+            if self.data.isSteam:
+                if self.data.system == "Windows":
+                    launcher = '""%s" %s"' % (self.data.get_game_dir(), "-applaunch 427520")
+                else:
+                    launcher = "steam -applaunch 427520"
             else:
-                launcher = "steam -applaunch 427520"
-        if mod:
-            if self.moddir:
-                launcher = launcher + " --mod-directory " + self.data.modsdir + "/" + mod
+                if self.data.system == "Windows":
+                    launcher = os.path.join(self.data.get_game_dir(), "factorio.exe")
+                else:
+                    launcher = os.path.join(self.data.get_game_dir(), "factorio")
+        if self.data.mods[mod]:
+            modPath = self.data.mods[mod]
+            if self.data.get_mods_dir():
+                baseModPath = self.data.get_mods_dir()
+                testPath = os.path.join(baseModPath, modPath)
+                if os.path.isdir(testPath):
+                    path = testPath
+                else:
+                    path = modPath
             else:
-                launcher = launcher + " --mod-directory " + HOME + "/.factorio/" + mod
-        print(launcher)
-        #os.system(launcher)
-
-    def _callback(self, mod):
-        self._mbox(mod + " Factorio")
-        self._launch(self.data.mods[mod])
+                path = os.path.join(HOME, ".factorio", modPath)
+            launcher = launcher + '" --mod-directory "%s""' % (path)
+        debug(launcher)
+        if not DEBUG:
+            os.system(launcher)
         self._cancel()
 
-    def _make_callback(self, mod):
-        return (lambda: self._callback(mod))
+    def _m_launch(self, mod):
+        '''Returns the Lambda for the callback'''
+        return (lambda: self._launch(mod))
 
-    # Factorio Starting Options
     def _cancel(self):
+        '''Closes the Script'''
         main.quit()
         main.destroy()
 
+# Directories Class
 class Directories:
 
     def __init__(self, rootTab, data):
+        '''Initialize the Directories Class with the root Element and the Data'''
         self.frame = ttk.Frame(rootTab)
         self.data = data
         self.entrylen = 40
@@ -117,9 +229,10 @@ class Directories:
         self.game.set(self.data.gamedir)
         self.mods = tk.StringVar()
         self.mods.set(self.data.modsdir)
-        self._addFileControls()
+        self._add_file_controls()
 
-    def _fileDiag(self, dirName):
+    def _dir_diag(self, dirName):
+        '''Simple Directory Dialog'''
         if dirName == "":
             dirName = HOME
         options = {}
@@ -128,32 +241,37 @@ class Directories:
         options['parent'] = main
         return fDiag.askdirectory(**options)
 
-    def _gameDiag(self):
-        name = self._fileDiag(self.game.get())
+    def _game_diag(self):
+        '''Opens a Directory Dialog for the Game Directory'''
+        name = self._dir_diag(self.game.get())
         self.game.set(name)
 
-    def _modDiag(self):
-        name = self._fileDiag(self.mods.get())
+    def _mods_diag(self):
+        '''Opens a Directory Dialog for the Mod Directory'''
+        name = self._dir_diag(self.mods.get())
         self.mods.set(name)
 
     def _reset(self):
+        '''Resets the Directories and saves the reset data to file'''
         self.game.set("")
         self.mods.set("")
         self._save()
 
     def _save(self):
+        '''Save the changed Data to file'''
         self.data.gamedir = self.game.get()
         self.data.modsdir = self.mods.get()
-        self.data.saveData()
+        self.data.save_data()
 
-    def _addFileControls(self):
+    def _add_file_controls(self):
+        '''Adds the GUI elements for the Game and Mod Directories'''
         self.labelFrame = ttk.LabelFrame(self.frame, text="Directories")
         self.labelFrame.pack(fill="both", expand=True)
-        self.gameButton = ttk.Button(self.labelFrame, text="Game Directory", command=self._gameDiag)
+        self.gameButton = ttk.Button(self.labelFrame, text="Game Directory", command=self._game_diag)
         self.gameButton.grid(column=0, row=0, sticky=N+S+E+W, padx=5, pady=5)
         self.gameTextField = ttk.Entry(self.labelFrame, width=self.entrylen, textvariable=self.game)
         self.gameTextField.grid(column=1, row=0, padx=5, pady=5)
-        self.modButton = ttk.Button(self.labelFrame, text="Mod Directory", command=self._modDiag)
+        self.modButton = ttk.Button(self.labelFrame, text="Mod Directory", command=self._mods_diag)
         self.modButton.grid(column=0, row=1, sticky=N+S+E+W, padx=5, pady=5)
         self.modTextField = ttk.Entry(self.labelFrame, width=self.entrylen, textvariable=self.mods)
         self.modTextField.grid(column=1, row=1, padx=5, pady=5)
@@ -163,7 +281,112 @@ class Directories:
         self.resetButton = ttk.Button(self.labelFrame, text="Reset to Defaults", command=self._reset)
         self.resetButton.grid(column=1, row=2, padx=5, pady=5)
 
-gamedata = Data()
+class Mods:
+
+    def __init__(self, rootTab, data):
+        '''Initialize the Mods Class with the root Element and the Data'''
+        self.data = data
+        self.frame = ttk.Frame(rootTab)
+        self.entrylen = 20
+        self.modPackName = StringVar()
+        self.modPackPath = StringVar()
+        self.modName = ""
+        self._draw_interface()
+
+    def _select_mod(self, event):
+        '''On selection in the ListBox, the ModPack name and directory are displayed in the details'''
+        selected = self.listBox.curselection()
+        item = selected[0]
+        modName = self.listBox.get(item)
+        self.modPackName.set(modName)
+        self.modPackPath.set(self.data.mods[modName])
+        self.modName = modName
+
+    def _new_mod(self):
+        '''Delete the Mod Pack Name and Mod Pack Path text boxes for a new Mod'''
+        self.modPackName.set("")
+        self.modPackPath.set("")
+        self.modName = ""
+
+    def _change_directory(self):
+        '''Change the directory for a Mod'''
+        modDirPath = self.data.get_mods_dir()
+        if self.modPackPath.get():
+            modPath = os.path.join(modDirPath, self.modPackPath.get())
+        else:
+            modPath = modDirPath
+        options = {}
+        options['initialdir'] = modPath
+        options['mustexist'] = False
+        options['parent'] = main
+        newPath = fDiag.askdirectory(**options)
+        if modDirPath in newPath:
+            newPath = os.path.relpath(newPath, modDirPath)
+        self.modPackPath.set(newPath)
+
+    def _repopulate_listBox(self):
+        '''Repopulate the ListBox'''
+        self.listBox.delete(0, END)
+        for mod in self.data.mods:
+            self.listBox.insert("end", mod)
+        self.data.launcher.repopulate_buttons()
+
+    def _save_mod(self):
+        '''Save a mod or a changed mod pack'''
+        modName = self.modPackName.get()
+        if modName:
+            self.data.mods[modName] = self.modPackPath.get()
+            confirm = msg.askyesnocancel("Save", "Do you want to change the name of the Mod Pack or save as new?")
+            if confirm:
+                del self.data.mods[self.modName]
+                self.data.save_data()
+                self._repopulate_listBox()
+            elif confirm == None:
+                return
+            else:
+                self.data.save_data()
+                self._repopulate_listBox()
+
+    def _delete_mod(self):
+        '''Delete a Mod Pack'''
+        del self.data.mods[self.modPackName.get()]
+        self.data.save_data()
+        self._new_mod()
+        self._repopulate_listBox()
+
+    def _draw_interface(self):
+        '''Draws the interface for the Mod Tab'''
+        self.labelFrame = ttk.LabelFrame(self.frame, text="Mod Packs")
+        self.labelFrame.pack(fill="both", expand=True)
+
+        # Add t he ListBox for the Mod Packs
+        self.listBox = tk.Listbox(self.labelFrame, selectmode="browse", height=10)
+        for mod in self.data.mods:
+            self.listBox.insert("end", mod)
+        self.listBox.grid(column=0, row=0, sticky=N+S+E+W, padx=5, pady=5)
+        self.listBox.bind('<<ListboxSelect>>', self._select_mod)
+
+        # Add the Details Frame
+        self.detailsLabelFrame = ttk.LabelFrame(self.labelFrame, text="Details")
+        self.detailsLabelFrame.grid(column=1, row=0, padx=5, pady=5)
+        ttk.Label(self.detailsLabelFrame, text="Mod Pack Name:").grid(column=0, row=0, padx=5, pady=5)
+        self.nameTextField = ttk.Entry(self.detailsLabelFrame, width=self.entrylen, textvariable=self.modPackName)
+        self.nameTextField.grid(column=1, row=0, padx=5, pady=5)
+        ttk.Label(self.detailsLabelFrame, text="Directory:").grid(column=0, row=1, padx=5, pady=5)
+        self.pathTextField = ttk.Entry(self.detailsLabelFrame, width=self.entrylen, textvariable=self.modPackPath)
+        self.pathTextField.grid(column=1, row=1, padx=5, pady=5)
+        self.pathButton = ttk.Button(self.detailsLabelFrame, text="Change Directory", command=self._change_directory)
+        self.pathButton.grid(column=1, row=2, padx=5, pady=5)
+        self.saveButton = ttk.Button(self.detailsLabelFrame, text="Save", command=self._save_mod)
+        self.saveButton.grid(column=0, row=2, padx=5, pady=5)
+        self.newButton = ttk.Button(self.detailsLabelFrame, text="New", command=self._new_mod)
+        self.newButton.grid(column=0, row=3, padx=5, pady=5)
+        self.remButton = ttk.Button(self.detailsLabelFrame, text="Remove", command=self._delete_mod)
+        self.remButton.grid(column=1, row=3, padx=5, pady=5)
+
+
+
+gamedata = Data(SETTINGS_FILE)
 
 # Create Instance
 main = tk.Tk()
@@ -180,8 +403,10 @@ tabControl = ttk.Notebook(main)
 
 tab1 = Launcher(tabControl, gamedata)
 tabControl.add(tab1.frame, text="Launch Factorio")
-tab2 = Directories(tabControl, gamedata)
-tabControl.add(tab2.frame, text="Directories")
+tab2 = Mods(tabControl, gamedata)
+tabControl.add(tab2.frame, text="Mod Directories")
+tab3 = Directories(tabControl, gamedata)
+tabControl.add(tab3.frame, text="Directories")
 tabControl.pack(expand=1, fill="both")
 
 
