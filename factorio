@@ -341,18 +341,20 @@ class Mods:
     def _save_mod(self):
         '''Save a mod or a changed mod pack'''
         modName = self.modPackName.get()
-        if modName:
+        debug(self.modName)
+        self.data.mods[modName] = self.modPackPath.get()
+        if self.modName:
             self.data.mods[modName] = self.modPackPath.get()
             confirm = msg.askyesnocancel("Save", "Do you want to change the name of the Mod Pack or save as new?")
             if confirm:
                 del self.data.mods[self.modName]
-                self.data.save_data()
-                self._repopulate_listBox()
             elif confirm == None:
                 return
             else:
-                self.data.save_data()
-                self._repopulate_listBox()
+                '''Save'''
+        self.modName = modName
+        self.data.save_data()
+        self._repopulate_listBox()
 
     def _delete_mod(self):
         '''Delete a Mod Pack'''

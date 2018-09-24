@@ -4,6 +4,10 @@
         "Mods": ""
     },
     "Mods": {
-        "Vanilla": ""
+        "Vanilla": "",
+        "Test3": "vanillaplus",
+        "Test": "vanillaplus",
+        "Test1": "script-output",
+        "Tes": "script-output"
     }
 }
