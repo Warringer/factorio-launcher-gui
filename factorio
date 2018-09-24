@@ -255,7 +255,9 @@ class Mods:
         self.data = data
         self.frame = ttk.Frame(rootTab)
         self.entrylen = 20
-        self._drawInterface()
+        self.modPackName = StringVar()
+        self.modPackPath = StringVar()
+        self._draw_interface()
 
     def _save_data(self):
         '''Saves the changed Mod data to file'''
@@ -270,14 +272,18 @@ class Mods:
         options['parent'] = main
         return fDiag.askdirectory(**options)
 
-    def _drawInterface(self):
+    def _draw_interface(self):
         '''Draws the interface for the Mod Tab'''
         self.labelFrame = ttk.LabelFrame(self.frame, text="Mod Packs")
         self.labelFrame.pack(fill="both", expand=True)
         self.listBox = tk.Listbox(self.labelFrame, selectmode="browse", height=10)
         for mod in self.data.mods:
             self.listBox.insert("end", mod)
-        self.listBox.grid(column=0, row=0, sticky=N+S+E+W, padx=5, pady=5)
+        self.listBox.grid(column=0, row=0, sticky=N+S+E+W, padx=5, pady=5, rowspan=3)
+        ttk.Label(self.labelFrame, text="Mod Pack Name:").grid(column=1, row=0, sticky=N+S+E+W, padx=5, pady=5)
+        self.nameTextField = ttk.Entry(self.labelFrame, width=self.entrylen, textvariable=self.modPackName)
+        self.nameTextField.grid(column=2, row=0, padx=5, pady=5)
+        
         
         
 
