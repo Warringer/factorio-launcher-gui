@@ -264,19 +264,6 @@ class Mods:
         self.modPackPath = StringVar()
         self._draw_interface()
 
-    def _save_data(self):
-        '''Saves the changed Mod data to file'''
-
-    def _dir_diag(self, dirName):
-        '''Simple Directory Dialog'''
-        if dirName == "":
-            dirName = HOME
-        options = {}
-        options['initialdir'] = dirName
-        options['mustexist'] = False
-        options['parent'] = main
-        return fDiag.askdirectory(**options)
-
     def _select_mod(self, event):
         '''On selection in the ListBox, the ModPack name and directory are displayed in the details'''
         selected = self.listBox.curselection()
@@ -287,9 +274,45 @@ class Mods:
         debug(modName)
 
     def _new_mod(self):
+        '''Delete the Mod Pack Name and Mod Pack Path text boxes for a new Mod'''
         self.modPackName.set("")
         self.modPackPath.set("")
 
+    def _change_directory(self):
+        '''Change the directory for a Mod'''
+        modDirPath = self.data.get_mods_dir()
+        if self.modPackPath.get():
+            modPath = os.path.join(modDirPath, self.modPackPath.get())
+        else:
+            modPath = modDirPath
+        options = {}
+        options['initialdir'] = modPath
+        options['mustexist'] = False
+        options['parent'] = main
+        newPath = fDiag.askdirectory(**options)
+        if modDirPath in newPath:
+            newPath = os.path.relpath(newPath, modDirPath)
+        self.modPackPath.set(newPath)
+
+    def _repopulate_listBox(self):
+        '''Repopulate the ListBox'''
+        self.listBox.delete(0, END)
+        for mod in self.data.mods:
+            self.listBox.insert("end", mod)
+
+    def _save_mod(self):
+        '''Save a mod or a changed mod pack'''
+        self.data.mods[self.modPackName.get()] = self.modPackPath.get()
+        self.data.save_data()
+        self._repopulate_listBox()
+
+    def _delete_mod(self):
+        '''Delete a Mod Pack'''
+        del self.data.mods[self.modPackName.get()]
+        self.data.save_data()
+        self._new_mod()
+        self._repopulate_listBox()
+        
     def _draw_interface(self):
         '''Draws the interface for the Mod Tab'''
         self.labelFrame = ttk.LabelFrame(self.frame, text="Mod Packs")
@@ -311,13 +334,13 @@ class Mods:
         ttk.Label(self.detailsLabelFrame, text="Directory:").grid(column=0, row=1, padx=5, pady=5)
         self.pathTextField = ttk.Entry(self.detailsLabelFrame, width=self.entrylen, textvariable=self.modPackPath)
         self.pathTextField.grid(column=1, row=1, padx=5, pady=5)
-        self.pathButton = ttk.Button(self.detailsLabelFrame, text="Change Directory")
+        self.pathButton = ttk.Button(self.detailsLabelFrame, text="Change Directory", command=self._change_directory)
         self.pathButton.grid(column=1, row=2, padx=5, pady=5)
-        self.saveButton = ttk.Button(self.detailsLabelFrame, text="Save")
+        self.saveButton = ttk.Button(self.detailsLabelFrame, text="Save", command=self._save_mod)
         self.saveButton.grid(column=0, row=2, padx=5, pady=5)
         self.newButton = ttk.Button(self.detailsLabelFrame, text="New", command=self._new_mod)
         self.newButton.grid(column=0, row=3, padx=5, pady=5)
-        self.remButton = ttk.Button(self.detailsLabelFrame, text="Remove")
+        self.remButton = ttk.Button(self.detailsLabelFrame, text="Remove", command=self._delete_mod)
         self.remButton.grid(column=1, row=3, padx=5, pady=5)
         
         
