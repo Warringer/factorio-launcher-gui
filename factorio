@@ -17,10 +17,15 @@ import json
 import platform
 import subprocess
 
+DEBUG = True
 
 SETTINGS_FILE = "factorio-mods.json"
-
 HOME = expanduser("~")
+
+def debug(a):
+    '''Helper functon for debugging'''
+    if DEBUG:
+        print(a)
 
 class Data:
 
@@ -64,7 +69,7 @@ class Data:
             self.modsdir = json_data["Directories"]["Mods"]
             self.mods = json_data["Mods"]
         except:
-            print("Creating new settings file")
+            debug("Creating new settings file")
             self.mods["Vanilla"] = ""
             self.save_data()
 
@@ -102,7 +107,7 @@ class Data:
                 self.gameDir = os.path.join(HOME, ".factorio")
             elif self.system == "Windows":
                 if self.isSteam:
-                    self.gameDir = os.path.join("C:/", "Program Files (x86)", "Steam", "steamapps", "common", "Factorio")
+                    sself.gameDir = os.path.join(os.getenv("programfiles(x86)"), "Steam", "steam")
                 else:    
                     self.gameDir = os.path.join("C:/", "Program Files", "Factorio")
             elif self.system == "Darwin":
@@ -130,7 +135,7 @@ class Launcher:
         buttons = []
         x = 0
         for mod in self.data.mods:
-            print(mod + " " + self.data.mods[mod])
+            debug(mod + " " + self.data.mods[mod])
             button = ttk.Button(self.labelFrame , text=mod+" Factorio", command=self._m_launch(mod))
             button.pack(fill="both", expand=True)
             x = x + 1
@@ -165,8 +170,9 @@ class Launcher:
                 launcher = launcher + " --mod-directory " + self.data.get_mods_dir() + "/" + self.data.mods[mod]
             else:
                 launcher = launcher + " --mod-directory " + HOME + "/.factorio/" + self.data.mods[mod]
-        print(launcher)
-        #os.system(launcher)
+        debug(launcher)
+        if not DEBUG:
+            os.system(launcher)
         self._cancel()
 
     def _m_launch(self, mod):
