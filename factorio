@@ -27,9 +27,9 @@ class Data:
         self.gamedir = ""
         self.modsdir = ""
         self.mods = {}
-        self.loadData()
+        self.load_data()
 
-    def saveData(self):
+    def save_data(self):
         '''Saves the Data into the Settings File'''
         data = {}
         data["Directories"] = {}
@@ -39,7 +39,7 @@ class Data:
         with open(self.filename, "w") as write_file:
             json.dump(data, write_file, indent=4)
 
-    def loadData(self):
+    def load_data(self):
         '''Attempts to Load the Settings File, if there is none, create one'''
         try:
             with open(SETTINGS_FILE, "r") as json_file:
@@ -50,7 +50,10 @@ class Data:
         except:
             print("Creating new settings file")
             self.mods["Vanilla"] = ""
-            self.saveData()
+            self.save_data()
+
+    def get_default_game_dir(self):
+        '''Returns the Default Game directories for Windows, Mac and Linux'''
 
 # Launcher Class
 class Launcher:
@@ -59,9 +62,9 @@ class Launcher:
         '''Initialize the Launcher Class with the root Element and the Data'''
         self.frame = ttk.Frame(rootTab)
         self.data = data
-        self._addButtons()
+        self._add_buttons()
 
-    def _addButtons(self):
+    def _add_buttons(self):
         '''Dynamically add the Launcher Buttons'''
         self.labelFrame = ttk.LabelFrame(self.frame, text="Launcher")
         self.labelFrame.pack(fill="both", expand=True)
@@ -120,9 +123,9 @@ class Directories:
         self.game.set(self.data.gamedir)
         self.mods = tk.StringVar()
         self.mods.set(self.data.modsdir)
-        self._addFileControls()
+        self._add_file_controls()
 
-    def _dirDiag(self, dirName):
+    def _dir_diag(self, dirName):
         '''Simple Directory Dialog'''
         if dirName == "":
             dirName = HOME
@@ -132,14 +135,14 @@ class Directories:
         options['parent'] = main
         return fDiag.askdirectory(**options)
 
-    def _gameDiag(self):
+    def _game_diag(self):
         '''Opens a Directory Dialog for the Game Directory'''
-        name = self._dirDiag(self.game.get())
+        name = self._dir_diag(self.game.get())
         self.game.set(name)
 
-    def _modDiag(self):
+    def _mods_diag(self):
         '''Opens a Directory Dialog for the Mod Directory'''
-        name = self._dirDiag(self.mods.get())
+        name = self._dir_diag(self.mods.get())
         self.mods.set(name)
 
     def _reset(self):
@@ -152,17 +155,17 @@ class Directories:
         '''Save the changed Data to file'''
         self.data.gamedir = self.game.get()
         self.data.modsdir = self.mods.get()
-        self.data.saveData()
+        self.data.save_data()
 
-    def _addFileControls(self):
+    def _add_file_controls(self):
         '''Adds the GUI elements for the Game and Mod Directories'''
         self.labelFrame = ttk.LabelFrame(self.frame, text="Directories")
         self.labelFrame.pack(fill="both", expand=True)
-        self.gameButton = ttk.Button(self.labelFrame, text="Game Directory", command=self._gameDiag)
+        self.gameButton = ttk.Button(self.labelFrame, text="Game Directory", command=self._game_diag)
         self.gameButton.grid(column=0, row=0, sticky=N+S+E+W, padx=5, pady=5)
         self.gameTextField = ttk.Entry(self.labelFrame, width=self.entrylen, textvariable=self.game)
         self.gameTextField.grid(column=1, row=0, padx=5, pady=5)
-        self.modButton = ttk.Button(self.labelFrame, text="Mod Directory", command=self._modDiag)
+        self.modButton = ttk.Button(self.labelFrame, text="Mod Directory", command=self._mods_diag)
         self.modButton.grid(column=0, row=1, sticky=N+S+E+W, padx=5, pady=5)
         self.modTextField = ttk.Entry(self.labelFrame, width=self.entrylen, textvariable=self.mods)
         self.modTextField.grid(column=1, row=1, padx=5, pady=5)
@@ -181,12 +184,12 @@ class Mods:
         self.entrylen = 20
         self._drawInterface()
 
-    def _saveData(self):
+    def _save_data(self):
         '''Saves the changed Mod data to file'''
 
             
 
-    def _dirDiag(self, dirName):
+    def _dir_diag(self, dirName):
         '''Simple Directory Dialog'''
         if dirName == "":
             dirName = HOME
@@ -196,10 +199,10 @@ class Mods:
         options['parent'] = main
         return fDiag.askdirectory(**options)
 
-    def _changeDir(self, mod):
+    def _change_dir(self, mod):
         '''Callback to change the Directory for a mod'''
         
-    def _m_changeDir(self, mod):
+    def _m_change_dir(self, mod):
         '''Returns the Lambda for the callback'''
 
     def _drawInterface(self):
