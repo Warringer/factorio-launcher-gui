@@ -140,7 +140,7 @@ class Launcher:
         '''Dynamically add the Launcher Buttons'''
         self.labelFrame = ttk.LabelFrame(self.frame, text="Launcher")
         self.labelFrame.pack(fill="both", expand=True)
-        
+
         self._add_launcher_buttons()
         self._add_cancel_button()
 
@@ -162,14 +162,14 @@ class Launcher:
             debug(mod + " " + self.data.mods[mod])
             button = ttk.Button(self.labelFrame , text=mod+" Factorio", command=self._m_launch(mod))
             button.pack(fill="both", expand=True)
-            self.buttons.append(button)     
+            self.buttons.append(button)
 
     def _add_cancel_button(self):
         '''Adds a Cancel Button'''
         button = ttk.Button(self.labelFrame , text="Cancel", command=self._cancel)
         button.pack(fill="both", expand=True)
         self.buttons.append(button)
-        
+
     def _mbox(self, mod):
         '''Display a Message Box'''
         text = "Launching "+mod
@@ -202,7 +202,7 @@ class Launcher:
                     path = modPath
             else:
                 path = os.path.join(HOME, ".factorio", modPath)
-            launcher = launcher + " --mod-directory " + path
+            launcher = launcher + '" --mod-directory "%s""' % (path)
         debug(launcher)
         if not DEBUG:
             os.system(launcher)
@@ -341,7 +341,7 @@ class Mods:
         self.data.save_data()
         self._new_mod()
         self._repopulate_listBox()
-        
+
     def _draw_interface(self):
         '''Draws the interface for the Mod Tab'''
         self.labelFrame = ttk.LabelFrame(self.frame, text="Mod Packs")
@@ -371,9 +371,9 @@ class Mods:
         self.newButton.grid(column=0, row=3, padx=5, pady=5)
         self.remButton = ttk.Button(self.detailsLabelFrame, text="Remove", command=self._delete_mod)
         self.remButton.grid(column=1, row=3, padx=5, pady=5)
-        
-        
-        
+
+
+
 gamedata = Data(SETTINGS_FILE)
 
 # Create Instance
