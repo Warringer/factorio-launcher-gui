@@ -29,13 +29,14 @@ args = parser.parse_args()
 if args.debug:
     DEBUG = True
 
+
 def debug(a):
     '''Helper functon for debugging'''
     if DEBUG:
         print(a)
 
-class Data:
 
+class Data:
     def __init__(self, filename):
         '''Initialize the Data Fields'''
         self.filename = filename
@@ -61,7 +62,6 @@ class Data:
             return True
         except:
             return False
-
 
     def save_data(self):
         '''Saves the Data into the Settings File'''
@@ -132,9 +132,9 @@ class Data:
                 self.gameDir = ""
         return self.gameDir
 
+
 # Launcher Class
 class Launcher:
-
     def __init__(self, rootTab, data):
         '''Initialize the Launcher Class with the root Element and the Data'''
         self.frame = ttk.Frame(rootTab)
@@ -167,13 +167,13 @@ class Launcher:
         '''Adds the Launcher Buttons'''
         for mod in self.data.mods:
             debug(mod + " " + self.data.mods[mod])
-            button = ttk.Button(self.labelFrame , text=mod+" Factorio", command=self._m_launch(mod))
+            button = ttk.Button(self.labelFrame, text=mod+" Factorio", command=self._m_launch(mod))
             button.pack(fill="both", expand=True)
             self.buttons.append(button)
 
     def _add_cancel_button(self):
         '''Adds a Cancel Button'''
-        button = ttk.Button(self.labelFrame , text="Cancel", command=self._cancel)
+        button = ttk.Button(self.labelFrame, text="Cancel", command=self._cancel)
         button.pack(fill="both", expand=True)
         self.buttons.append(button)
 
@@ -227,9 +227,9 @@ class Launcher:
         main.quit()
         main.destroy()
 
+
 # Directories Class
 class Directories:
-
     def __init__(self, rootTab, data):
         '''Initialize the Directories Class with the root Element and the Data'''
         self.frame = ttk.Frame(rootTab)
@@ -291,8 +291,8 @@ class Directories:
         self.resetButton = ttk.Button(self.labelFrame, text="Reset to Defaults", command=self._reset)
         self.resetButton.grid(column=1, row=2, padx=5, pady=5)
 
-class Mods:
 
+class Mods:
     def __init__(self, rootTab, data):
         '''Initialize the Mods Class with the root Element and the Data'''
         self.data = data
@@ -351,7 +351,7 @@ class Mods:
             confirm = msg.askyesnocancel("Save", "Do you want to change the name of the Mod Pack or save as new?")
             if confirm:
                 del self.data.mods[self.modName]
-            elif confirm == None:
+            elif confirm is None:
                 return
             else:
                 '''Save'''
@@ -395,7 +395,6 @@ class Mods:
         self.newButton.grid(column=0, row=3, padx=5, pady=5)
         self.remButton = ttk.Button(self.detailsLabelFrame, text="Remove", command=self._delete_mod)
         self.remButton.grid(column=1, row=3, padx=5, pady=5)
-
 
 
 gamedata = Data(SETTINGS_FILE)
