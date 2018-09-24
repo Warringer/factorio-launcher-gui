@@ -277,17 +277,49 @@ class Mods:
         options['parent'] = main
         return fDiag.askdirectory(**options)
 
-    def _drawInterface(self):
+    def _select_mod(self, event):
+        '''On selection in the ListBox, the ModPack name and directory are displayed in the details'''
+        selected = self.listBox.curselection()
+        item = selected[0]
+        modName = self.listBox.get(item)
+        self.modPackName.set(modName)
+        self.modPackPath.set(self.data.mods[modName])
+        debug(modName)
+
+    def _new_mod(self):
+        self.modPackName.set("")
+        self.modPackPath.set("")
+
+    def _draw_interface(self):
         '''Draws the interface for the Mod Tab'''
         self.labelFrame = ttk.LabelFrame(self.frame, text="Mod Packs")
         self.labelFrame.pack(fill="both", expand=True)
+
+        # Add t he ListBox for the Mod Packs
         self.listBox = tk.Listbox(self.labelFrame, selectmode="browse", height=10)
         for mod in self.data.mods:
             self.listBox.insert("end", mod)
-        self.listBox.grid(column=0, row=0, sticky=N+S+E+W, padx=5, pady=5, rowspan=3)
-        ttk.Label(self.labelFrame, text="Mod Pack Name:").grid(column=1, row=0, sticky=N+S+E+W, padx=5, pady=5)
-        self.nameTextField = ttk.Entry(self.labelFrame, width=self.entrylen, textvariable=self.modPackName)
-        self.nameTextField.grid(column=2, row=0, padx=5, pady=5)
+        self.listBox.grid(column=0, row=0, sticky=N+S+E+W, padx=5, pady=5)
+        self.listBox.bind('<<ListboxSelect>>', self._select_mod)
+
+        # Add the Details Frame
+        self.detailsLabelFrame = ttk.LabelFrame(self.labelFrame, text="Details")
+        self.detailsLabelFrame.grid(column=1, row=0, padx=5, pady=5)
+        ttk.Label(self.detailsLabelFrame, text="Mod Pack Name:").grid(column=0, row=0, padx=5, pady=5)
+        self.nameTextField = ttk.Entry(self.detailsLabelFrame, width=self.entrylen, textvariable=self.modPackName)
+        self.nameTextField.grid(column=1, row=0, padx=5, pady=5)
+        ttk.Label(self.detailsLabelFrame, text="Directory:").grid(column=0, row=1, padx=5, pady=5)
+        self.pathTextField = ttk.Entry(self.detailsLabelFrame, width=self.entrylen, textvariable=self.modPackPath)
+        self.pathTextField.grid(column=1, row=1, padx=5, pady=5)
+        self.pathButton = ttk.Button(self.detailsLabelFrame, text="Change Directory")
+        self.pathButton.grid(column=1, row=2, padx=5, pady=5)
+        self.saveButton = ttk.Button(self.detailsLabelFrame, text="Save")
+        self.saveButton.grid(column=0, row=2, padx=5, pady=5)
+        self.newButton = ttk.Button(self.detailsLabelFrame, text="New", command=self._new_mod)
+        self.newButton.grid(column=0, row=3, padx=5, pady=5)
+        self.remButton = ttk.Button(self.detailsLabelFrame, text="Remove")
+        self.remButton.grid(column=1, row=3, padx=5, pady=5)
+        
         
         
 gamedata = Data(SETTINGS_FILE)
