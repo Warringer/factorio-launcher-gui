@@ -209,7 +209,10 @@ class Launcher:
                     path = modPath
             else:
                 path = os.path.join(HOME, ".factorio", modPath)
-            launcher = launcher + '" --mod-directory "%s""' % (path)
+            if self.data.system == "Windows":
+                launcher = launcher + '" --mod-directory "%s""' % (path)
+            else:
+                launcher = launcher + " --mod-directoty " + path
         debug(launcher)
         if not DEBUG:
             os.system(launcher)
