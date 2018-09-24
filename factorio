@@ -152,9 +152,7 @@ class Launcher:
 
     def _destroy_buttons(self):
         '''Removed all Launcher Buttons'''
-        debug(self.buttons)
         for button in self.buttons:
-            debug(button)
             button.pack_forget()
         self.buttons.clear()
 
@@ -194,10 +192,17 @@ class Launcher:
                 else:
                     launcher = os.path.join(self.data.get_game_dir(), "factorio")
         if self.data.mods[mod]:
+            modPath = self.data.mods[mod]
             if self.data.get_mods_dir():
-                launcher = launcher + " --mod-directory " + self.data.get_mods_dir() + "/" + self.data.mods[mod]
+                baseModPath = self.data.get_mods_dir()
+                testPath = os.path.join(baseModPath, modPath)
+                if os.path.isdir(testPath):
+                    path = testPath
+                else:
+                    path = modPath
             else:
-                launcher = launcher + " --mod-directory " + HOME + "/.factorio/" + self.data.mods[mod]
+                path = os.path.join(HOME, ".factorio", modPath)
+            launcher = launcher + " --mod-directory " + path
         debug(launcher)
         if not DEBUG:
             os.system(launcher)

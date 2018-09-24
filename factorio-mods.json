@@ -6,6 +6,7 @@
     "Mods": {
         "Vanilla": "",
         "Vanilla Plus": "vanillaplus",
-        "Test": "vanillaplus"
+        "Test": "vanillaplus",
+        "Test2": "/home/warringer/.android"
     }
 }
