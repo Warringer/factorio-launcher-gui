@@ -290,6 +290,7 @@ class Mods:
         self.entrylen = 20
         self.modPackName = StringVar()
         self.modPackPath = StringVar()
+        self.modName = ""
         self._draw_interface()
 
     def _select_mod(self, event):
@@ -299,12 +300,13 @@ class Mods:
         modName = self.listBox.get(item)
         self.modPackName.set(modName)
         self.modPackPath.set(self.data.mods[modName])
-        debug(modName)
+        self.modName = modName
 
     def _new_mod(self):
         '''Delete the Mod Pack Name and Mod Pack Path text boxes for a new Mod'''
         self.modPackName.set("")
         self.modPackPath.set("")
+        self.modName = ""
 
     def _change_directory(self):
         '''Change the directory for a Mod'''
@@ -331,9 +333,19 @@ class Mods:
 
     def _save_mod(self):
         '''Save a mod or a changed mod pack'''
-        self.data.mods[self.modPackName.get()] = self.modPackPath.get()
-        self.data.save_data()
-        self._repopulate_listBox()
+        modName = self.modPackName.get()
+        if modName:
+            self.data.mods[modName] = self.modPackPath.get()
+            confirm = msg.askyesnocancel("Save", "Do you want to change the name of the Mod Pack or save as new?")
+            if confirm:
+                del self.data.mods[self.modName]
+                self.data.save_data()
+                self._repopulate_listBox()
+            elif confirm == None:
+                return
+            else:
+                self.data.save_data()
+                self._repopulate_listBox()
 
     def _delete_mod(self):
         '''Delete a Mod Pack'''
