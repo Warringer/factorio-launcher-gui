@@ -107,7 +107,7 @@ class Data:
                 self.gameDir = os.path.join(HOME, ".factorio")
             elif self.system == "Windows":
                 if self.isSteam:
-                    sself.gameDir = os.path.join(os.getenv("programfiles(x86)"), "Steam", "steam")
+                    self.gameDir = os.path.join(os.getenv("programfiles(x86)"), "Steam", "steam")
                 else:    
                     self.gameDir = os.path.join("C:/", "Program Files", "Factorio")
             elif self.system == "Darwin":
@@ -184,6 +184,7 @@ class Launcher:
         main.quit()
         main.destroy()
 
+# Directories Class
 class Directories:
 
     def __init__(self, rootTab, data):
@@ -259,8 +260,6 @@ class Mods:
     def _save_data(self):
         '''Saves the changed Mod data to file'''
 
-            
-
     def _dir_diag(self, dirName):
         '''Simple Directory Dialog'''
         if dirName == "":
@@ -271,14 +270,10 @@ class Mods:
         options['parent'] = main
         return fDiag.askdirectory(**options)
 
-    def _change_dir(self, mod):
-        '''Callback to change the Directory for a mod'''
-        
-    def _m_change_dir(self, mod):
-        '''Returns the Lambda for the callback'''
-
     def _drawInterface(self):
         '''Draws the interface for the Mod Tab'''
+        
+        
 
 
 gamedata = Data(SETTINGS_FILE)
