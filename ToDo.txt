@@ -1,0 +1,8 @@
+Just a little ToDo list of potential features in no particular order:
+
+- Add functionality to have different blueprint files per mod
+    Save the blueprint file in the mod directly and overwrite before each launch?
+- Add functionality to add Mod Pack directories from doanloaded zip files containing multiple mods
+    e.g. Nilaus mod packs for each of his series
+    Creates a new mod directory and unzips the files
+    Perhaps with progress bar based in the number of files in the zip and displaying every unzipped file
