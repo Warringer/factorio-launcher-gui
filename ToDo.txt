@@ -6,3 +6,7 @@ Just a little ToDo list of potential features in no particular order:
     e.g. Nilaus mod packs for each of his series
     Creates a new mod directory and unzips the files
     Perhaps with progress bar based in the number of files in the zip and displaying every unzipped file
+- Add functionality to backup savegames for mod packs
+    Create a subfolder that backups savegames
+    Needs way to save the last used modpack to backup savagames
+      - Save last used modpack launch in json file
